@@ -43,6 +43,7 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
   const [showResult, setShowResult] = useState(false);
   const [requestBody, setRequestBody] = useState<string>("");
   const [showBodyInput, setShowBodyInput] = useState(false);
+  const [jsonError, setJsonError] = useState<string | null>(null);
 
   const { pay, reset, result, isConnected } = useX402Payment();
   const { openConnectModal } = useConnectModal();
@@ -63,6 +64,7 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
 
     reset();
     setShowResult(false);
+    setJsonError(null);
 
     // Parse the body for POST feeds
     let bodyToSend: unknown = undefined;
@@ -70,14 +72,7 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
       try {
         bodyToSend = JSON.parse(requestBody);
       } catch {
-        setResult({ 
-          status: "error", 
-          data: null, 
-          error: "Invalid JSON body", 
-          latencyMs: null, 
-          paidAmount: null, 
-          txHash: null 
-        });
+        setJsonError("Invalid JSON body");
         return;
       }
     }
@@ -133,11 +128,11 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
           </div>
         </div>
 
-        {result.status === "error" && result.error && (
+        {(result.status === "error" && result.error) || jsonError ? (
           <div className="text-xs font-mono text-red bg-red/5 border border-red/20 rounded-lg px-3 py-2">
-            {result.error}
+            {jsonError || result.error}
           </div>
-        )}
+        ) : null}
 
         <div className="flex gap-2">
           <button
@@ -211,15 +206,25 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
               value={requestBody}
               onChange={(e) => setRequestBody(e.target.value)}
             />
+            {jsonError && (
+              <p className="text-red text-xs font-mono mt-2">{jsonError}</p>
+            )}
             <div className="flex gap-3 mt-4">
               <button
-                onClick={() => setShowBodyInput(false)}
+                onClick={() => {
+                  setShowBodyInput(false);
+                  setJsonError(null);
+                }}
                 className="flex-1 py-2 rounded-lg border border-border-2 text-text-2"
               >
                 Cancel
               </button>
               <button
-                onClick={() => { setShowBodyInput(false); handlePay(); }}
+                onClick={() => {
+                  setJsonError(null);
+                  setShowBodyInput(false);
+                  handlePay();
+                }}
                 className="flex-1 py-2 rounded-lg bg-cyan text-bg"
               >
                 Confirm & Pay
