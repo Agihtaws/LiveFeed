@@ -11,6 +11,8 @@ import {
 } from "../lib/wagmi";
 import type { Feed } from "../types";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
+
 export type PaymentStatus =
   | "idle"
   | "fetching"
@@ -117,7 +119,7 @@ export function useX402Payment() {
       return;
     }
 
-    const feedUrl = `/feed/${feed.id}`;
+    const feedUrl = `${API_BASE_URL}/feed/${feed.id}`;
     const start = Date.now();
 
     try {
