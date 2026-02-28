@@ -5,7 +5,7 @@ import { http } from "wagmi";
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID ?? "demo";
 
-const RPC_URL = typeof window !== "undefined"
+const RPC_URL = import.meta.env.DEV
   ? "/rpc"
   : "https://base-sepolia-rpc.publicnode.com";
 
