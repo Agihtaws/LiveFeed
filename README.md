@@ -1,4 +1,3 @@
-
 # LiveFeed
 
 > A decentralized API marketplace where anyone can sell access to any API using per-call micropayments.  
@@ -47,6 +46,7 @@ The result is a seamless, trustless micropayment system—no subscriptions, no b
 - **Provider Dashboard** – Register, pause/resume, and delete your feeds. Real‑time stats: calls, earnings, latency.
 - **Consumer Catalog** – Browse feeds by category, search, and sort. Live updates of call counts and earnings (polled every 15s).
 - **Per‑Call Payments** – `x402` with EIP‑3009 USDC transfers (no ETH gas needed for the user).
+- **POST Feed Support** – Send JSON bodies with your paid calls; the backend forwards them unchanged.
 - **Free Previews** – 3 free test calls per hour per feed (rate‑limited server‑side).
 - **On‑Chain Proof** – After a successful payment, the `X-PAYMENT-RESPONSE` header returns the transaction hash; the frontend shows a Basescan link.
 - **Wallet Integration** – RainbowKit + Wagmi, auto‑network switching, USDC balance display.
@@ -151,7 +151,9 @@ PINION_PRIVATE_KEY=your_private_key      # Private key of the platform wallet (u
 ```env
 VITE_WALLETCONNECT_PROJECT_ID=your_project_id   # Optional, "demo" works for development
 VITE_USDC_ADDRESS=0x036CbD53842c5426634e7929541eC2318f3dCF7e   # Base Sepolia USDC
+VITE_API_URL=http://localhost:4020               # Backend URL for local development
 ```
+> For production, set `VITE_API_URL` to your deployed backend URL (e.g., `https://livefeed-backend.onrender.com`).
 
 ---
 
@@ -215,14 +217,21 @@ This script:
 
 ## Deployment
 
-### Backend
-- Build: `npm run build` (if you have a build step, but currently it's TypeScript executed directly).
-- Use a process manager like `pm2` or deploy on a platform like Render, Railway, or a VPS.
-- Ensure environment variables are set.
+### Backend (Render)
+1. Push your code to GitHub.
+2. Create a new **Web Service** on Render.
+3. Point to your repository, set the **Root Directory** to `backend`.
+4. Use the following settings:
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+5. Add environment variables: `PLATFORM_ADDRESS`, `NETWORK` (and optionally `PINION_PRIVATE_KEY`).
+6. Deploy – you'll get a URL like `https://livefeed-backend.onrender.com`.
 
-### Frontend
-- Build: `npm run build` – generates static files in `dist/`.
-- Serve with any static server (Netlify, Vercel, etc.) or deploy alongside the backend.
+### Frontend (Vercel)
+1. Push your code to GitHub.
+2. Import the project into Vercel, set the **Root Directory** to `frontend`.
+3. Add environment variable `VITE_API_URL` pointing to your deployed backend (e.g., `https://livefeed-backend.onrender.com`).
+4. Deploy – you'll get a URL like `https://live-feed-rouge.vercel.app`.
 
 ---
 
@@ -234,12 +243,12 @@ MIT © [Agihtaws](https://github.com/Agihtaws)
 
 ## Links
 
-- **Live Frontend**: [Frontend URL]
-- **Live Backend**: [Backend URL]
+- **Live Frontend**: [https://live-feed-rouge.vercel.app](https://live-feed-rouge.vercel.app)
+- **Live Backend**: [https://livefeed-backend.onrender.com](https://livefeed-backend.onrender.com)
 - **GitHub Repository**: [https://github.com/Agihtaws/LiveFeed](https://github.com/Agihtaws/LiveFeed)
-- **YouTube Demo**: [YouTube Demo Link]
+- **YouTube Demo**: [YouTube Demo Link] (add your video link here)
 
-[frontend-url]: #
-[backend-url]: #
+[frontend-url]: https://live-feed-rouge.vercel.app
+[backend-url]: https://livefeed-backend.onrender.com
 [github-url]: https://github.com/Agihtaws/LiveFeed
 [yt-demo]: #
