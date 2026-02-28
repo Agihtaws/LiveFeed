@@ -16,7 +16,7 @@ import testcallRoutes from "./routes/testcall.js";
 import statsRoutes from "./routes/stats.js";
 import snippetRoutes from "./routes/snippet.js";
 
-const REQUIRED_ENV = ["PINION_PRIVATE_KEY"];
+const REQUIRED_ENV = ["PLATFORM_ADDRESS"];
 for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     console.error(`[startup] Missing required env var: ${key}`);
