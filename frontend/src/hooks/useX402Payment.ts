@@ -105,7 +105,7 @@ export function useX402Payment() {
     ? parseFloat(formatUnits(usdcBalance, 6))
     : null;
 
-  const pay = useCallback(async (feed: Feed) => {
+  const pay = useCallback(async (feed: Feed, body?: unknown) => {
     if (!isConnected || !address) {
       setResult({ status: "error", data: null, error: "Connect your wallet first", latencyMs: null, paidAmount: null, txHash: null });
       return;
@@ -125,6 +125,7 @@ export function useX402Payment() {
     try {
       setResult({ status: "fetching", data: null, error: null, latencyMs: null, paidAmount: null, txHash: null });
 
+      // Initial request (without payment) – only method, no body
       const r1 = await fetch(feedUrl, { method: feed.method });
 
       if (r1.status !== 402) {
@@ -176,11 +177,21 @@ export function useX402Payment() {
 
       setResult({ status: "paying", data: null, error: null, latencyMs: null, paidAmount: null, txHash: null });
 
-      const r2 = await fetch(feedUrl, {
+      // Prepare the paid request – include body only for POST and when body is provided
+      const fetchOptions: RequestInit = {
         method: feed.method,
         headers: { "X-PAYMENT": xPayment, "Accept": "application/json" },
-      });
+      };
 
+      if (feed.method === "POST" && body !== undefined) {
+        fetchOptions.body = JSON.stringify(body);
+        fetchOptions.headers = {
+          ...fetchOptions.headers,
+          "Content-Type": "application/json",
+        };
+      }
+
+      const r2 = await fetch(feedUrl, fetchOptions);
       const latencyMs = Date.now() - start;
 
       if (!r2.ok) {

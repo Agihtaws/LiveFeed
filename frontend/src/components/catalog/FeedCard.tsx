@@ -41,6 +41,8 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
   const [showTest, setShowTest] = useState(false);
   const [showSnippet, setShowSnippet] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [requestBody, setRequestBody] = useState<string>("");
+  const [showBodyInput, setShowBodyInput] = useState(false);
 
   const { pay, reset, result, isConnected } = useX402Payment();
   const { openConnectModal } = useConnectModal();
@@ -52,9 +54,35 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
       openConnectModal?.();
       return;
     }
+
+    // For POST feeds, if no body has been provided yet, show the input modal
+    if (feed.method === "POST" && !requestBody) {
+      setShowBodyInput(true);
+      return;
+    }
+
     reset();
     setShowResult(false);
-    await pay(feed);
+
+    // Parse the body for POST feeds
+    let bodyToSend: unknown = undefined;
+    if (feed.method === "POST" && requestBody) {
+      try {
+        bodyToSend = JSON.parse(requestBody);
+      } catch {
+        setResult({ 
+          status: "error", 
+          data: null, 
+          error: "Invalid JSON body", 
+          latencyMs: null, 
+          paidAmount: null, 
+          txHash: null 
+        });
+        return;
+      }
+    }
+
+    await pay(feed, bodyToSend);
     setShowResult(true);
     onPaymentSuccess?.();
   };
@@ -170,6 +198,35 @@ export default function FeedCard({ feed, onPaymentSuccess, style }: Props) {
           onClose={() => { setShowResult(false); reset(); }}
           onPayAgain={handlePayAgain}
         />
+      )}
+
+      {/* POST body input modal */}
+      {showBodyInput && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg/80 backdrop-blur-sm">
+          <div className="card w-full max-w-md p-5">
+            <h3 className="font-display font-semibold text-text-1 mb-3">Enter JSON body for POST</h3>
+            <textarea
+              className="w-full bg-bg border border-border rounded-lg p-3 font-mono text-sm h-40"
+              placeholder='{"key": "value"}'
+              value={requestBody}
+              onChange={(e) => setRequestBody(e.target.value)}
+            />
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() => setShowBodyInput(false)}
+                className="flex-1 py-2 rounded-lg border border-border-2 text-text-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setShowBodyInput(false); handlePay(); }}
+                className="flex-1 py-2 rounded-lg bg-cyan text-bg"
+              >
+                Confirm & Pay
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
