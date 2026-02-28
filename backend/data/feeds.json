@@ -73,10 +73,10 @@
     "price": "$0.01",
     "providerAddress": "0x16fe7e28314162b463dE747F61F7173D8a4c9f73",
     "createdAt": "2026-02-28T07:30:39.501Z",
-    "callCount": 11,
-    "totalEarnedAtomic": 110000,
-    "avgLatencyMs": 771,
-    "lastCalledAt": "2026-02-28T17:35:32.396Z",
+    "callCount": 13,
+    "totalEarnedAtomic": 130000,
+    "avgLatencyMs": 749,
+    "lastCalledAt": "2026-02-28T18:06:30.506Z",
     "status": "active"
   }
 ]
