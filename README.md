@@ -7,6 +7,7 @@
 [![Backend API](https://img.shields.io/badge/api-live-blue)][backend-url]
 [![GitHub Repo](https://img.shields.io/badge/github-repo-black)][github-url]
 [![YouTube Demo](https://img.shields.io/badge/video-demo-red)][yt-demo]
+[![X Announcement](https://img.shields.io/badge/announcement-X-blue)][x-url]
 
 ---
 
@@ -246,9 +247,12 @@ MIT © [Agihtaws](https://github.com/Agihtaws)
 - **Live Frontend**: [https://live-feed-rouge.vercel.app](https://live-feed-rouge.vercel.app)
 - **Live Backend**: [https://livefeed-backend.onrender.com](https://livefeed-backend.onrender.com)
 - **GitHub Repository**: [https://github.com/Agihtaws/LiveFeed](https://github.com/Agihtaws/LiveFeed)
-- **YouTube Demo**: [YouTube Demo Link] (add your video link here)
+- **YouTube Demo**: [https://youtu.be/ZFFIIXPqnos](https://youtu.be/ZFFIIXPqnos)
+- **Announcement on X**: [https://x.com/Swathiga581/status/2027957088841023845](https://x.com/Swathiga581/status/2027957088841023845)
 
 [frontend-url]: https://live-feed-rouge.vercel.app
 [backend-url]: https://livefeed-backend.onrender.com
 [github-url]: https://github.com/Agihtaws/LiveFeed
-[yt-demo]: #
+[yt-demo]: https://youtu.be/ZFFIIXPqnos
+[x-url]: https://x.com/Swathiga581/status/2027957088841023845
+
