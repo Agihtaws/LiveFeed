@@ -11,17 +11,15 @@ router.get(
     const feed = registry.getById(req.params.feedId);
     if (!feed) throw new NotFoundError("Feed");
 
-    // Build the backend base URL dynamically (trust proxy if behind reverse proxy)
     const protocol = req.protocol;
-    const host = req.get('host');
+    const host = req.get("host");
     const baseUrl = `${protocol}://${host}`;
 
     const tsCode = [
       `import { PinionClient, payX402Service } from "pinion-os";`,
-      `import { parseUnits } from "viem";`,
       ``,
       `// Initialize the client with your wallet private key`,
-      `const client = new PinionClient({`,
+      `const pinion = new PinionClient({`,
       `  privateKey: process.env.PINION_PRIVATE_KEY,`,
       `  network: "base-sepolia",`,
       `});`,
@@ -29,11 +27,11 @@ router.get(
       `// Feed: ${feed.name} (${feed.price} USDC per call)`,
       `const feedUrl = "${baseUrl}/feed/${feed.id}";`,
       ``,
-      `// The x402 flow is handled by payX402Service`,
-      `const result = await payX402Service(client.signer, feedUrl, {`,
+      `// payX402Service handles the full 402 → sign → retry flow automatically`,
+      `const result = await payX402Service(pinion.signer, feedUrl, {`,
       `  method: "${feed.method}",`,
-      `  maxAmount: "1000000", // safety cap: max $1.00`,
-      `  ${feed.method === 'POST' ? 'body: JSON.stringify({ your: "data" }),' : ''}`,
+      `  maxAmount: "1000000", // safety cap: max $1.00 USDC`,
+      ...(feed.method === "POST" ? [`  body: JSON.stringify({ your: "data" }),`] : []),
       `});`,
       ``,
       `if (result.status === 200) {`,
@@ -42,22 +40,24 @@ router.get(
       `} else {`,
       `  console.error("Payment failed:", result.data);`,
       `}`,
-    ].filter(Boolean).join("\n");
+    ].join("\n");
 
     const curlNote = [
       `# 1. First request returns 402 with payment requirements:`,
       `curl -v ${baseUrl}/feed/${feed.id}`,
       ``,
-      `# 2. Sign EIP-3009 USDC authorization with your wallet (e.g., using the frontend or pinion_pay_service)`,
-      `# 3. Retry with X-PAYMENT header — the SDK or frontend does this automatically.`,
-      `# See the TypeScript snippet for programmatic usage.`,
+      `# 2. Sign EIP-3009 USDC authorization with your wallet.`,
+      `#    The pinion-os SDK does this automatically (see TypeScript snippet above).`,
+      ``,
+      `# 3. Retry with X-PAYMENT header:`,
+      `# curl -H "X-PAYMENT: <base64-payload>" ${baseUrl}/feed/${feed.id}`,
     ].join("\n");
 
     res.json({
-      feedId: feed.id,
-      name: feed.name,
-      price: feed.price,
-      method: feed.method,
+      feedId:     feed.id,
+      name:       feed.name,
+      price:      feed.price,
+      method:     feed.method,
       typescript: tsCode,
       curlNote,
     });
